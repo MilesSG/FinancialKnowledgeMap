@@ -1,0 +1,452 @@
+:root {
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: light dark;
+  background-color: #fff;
+  color: #1d1d1f;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+#app {
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* 颜色变量 */
+:root {
+  --apple-blue: #0071e3;
+  --apple-gray: #f5f5f7;
+  --apple-dark: #1d1d1f;
+}
+
+/* 容器类 */
+.container-apple {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+@media (min-width: 640px) {
+  .container-apple {
+    padding: 0 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container-apple {
+    padding: 0 2rem;
+  }
+}
+
+/* 按钮样式 */
+.btn-apple {
+  letter-spacing: -0.01em;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: var(--apple-blue);
+  color: white;
+  border-radius: 9999px;
+  padding: 0.5rem 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.btn-apple:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+/* 标题样式 */
+.section-title {
+  font-size: 2.25rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: var(--apple-dark);
+}
+
+/* 常用类 */
+.min-h-screen {
+  min-height: 100vh;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.relative {
+  position: relative;
+}
+
+.sticky {
+  position: sticky;
+}
+
+.fixed {
+  position: fixed;
+}
+
+.top-0 {
+  top: 0;
+}
+
+.z-50 {
+  z-index: 50;
+}
+
+.p-4 {
+  padding: 1rem;
+}
+
+.py-8 {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+.py-10 {
+  padding-top: 2.5rem;
+  padding-bottom: 2.5rem;
+}
+
+.py-20 {
+  padding-top: 5rem;
+  padding-bottom: 5rem;
+}
+
+.py-24 {
+  padding-top: 6rem;
+  padding-bottom: 6rem;
+}
+
+.mb-1 {
+  margin-bottom: 0.25rem;
+}
+
+.mb-2 {
+  margin-bottom: 0.5rem;
+}
+
+.mb-4 {
+  margin-bottom: 1rem;
+}
+
+.mb-6 {
+  margin-bottom: 1.5rem;
+}
+
+.mb-12 {
+  margin-bottom: 3rem;
+}
+
+.mb-16 {
+  margin-bottom: 4rem;
+}
+
+.mt-2 {
+  margin-top: 0.5rem;
+}
+
+.mt-4 {
+  margin-top: 1rem;
+}
+
+.mr-4 {
+  margin-right: 1rem;
+}
+
+.gap-2 {
+  gap: 0.5rem;
+}
+
+.gap-4 {
+  gap: 1rem;
+}
+
+.gap-8 {
+  gap: 2rem;
+}
+
+.rounded-lg {
+  border-radius: 0.5rem;
+}
+
+.rounded-xl {
+  border-radius: 0.75rem;
+}
+
+.rounded-2xl {
+  border-radius: 1rem;
+}
+
+.rounded-full {
+  border-radius: 9999px;
+}
+
+.bg-white {
+  background-color: white;
+}
+
+.bg-apple-gray {
+  background-color: var(--apple-gray);
+}
+
+.bg-apple-blue {
+  background-color: var(--apple-blue);
+}
+
+.text-white {
+  color: white;
+}
+
+.text-apple-dark {
+  color: var(--apple-dark);
+}
+
+.text-xs {
+  font-size: 0.75rem;
+}
+
+.text-sm {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.text-xl {
+  font-size: 1.25rem;
+}
+
+.font-medium {
+  font-weight: 500;
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+.shadow-sm {
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.shadow-md {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.shadow-lg {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.grid {
+  display: grid;
+}
+
+.grid-cols-1 {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+.overflow-hidden {
+  overflow: hidden;
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.transition-colors {
+  transition-property: color, background-color, border-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
+}
+
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+}
+
+/* 动画 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.8s ease-out;
+}
+
+.animate-fade-in-delay {
+  animation: fadeIn 0.8s ease-out 0.3s both;
+}
+
+.animate-fade-in-delay-2 {
+  animation: fadeIn 0.8s ease-out 0.6s both;
+}
+
+/* Apple风格的类前缀 */
+.apple- {
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* 修复文字溢出问题 */
+.text-nowrap {
+  white-space: nowrap;
+}
+
+.text-ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 禁用Tailwind的前缀匹配问题 */
+.apple-blue {
+  color: var(--apple-blue);
+}
+
+.bg-apple-blue {
+  background-color: var(--apple-blue);
+}
+
+.text-apple-dark {
+  color: var(--apple-dark);
+}
+
+.bg-apple-gray {
+  background-color: var(--apple-gray);
+}
+
+/* 媒体查询 */
+@media (min-width: 768px) {
+  .md\\:flex-row {
+    flex-direction: row;
+  }
+
+  .md\\:items-center {
+    align-items: center;
+  }
+
+  .md\\:grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .md\\:grid-cols-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .md\\:gap-12 {
+    gap: 3rem;
+  }
+
+  .md\\:py-36 {
+    padding-top: 9rem;
+    padding-bottom: 9rem;
+  }
+
+  .md\\:text-7xl {
+    font-size: 4.5rem;
+  }
+
+  .md\\:text-2xl {
+    font-size: 1.5rem;
+  }
+
+  .md\\:mb-0 {
+    margin-bottom: 0;
+  }
+  
+  .md\\:mt-0 {
+    margin-top: 0;
+  }
+}
+
+/* 暗色模式 */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color: #f5f5f7;
+    background-color: #1d1d1f;
+  }
+
+  .dark-bg-apple-dark, .dark\\:bg-apple-dark {
+    background-color: var(--apple-dark);
+  }
+
+  .dark-bg-black, .dark\\:bg-black {
+    background-color: black;
+  }
+
+  .dark-bg-gray-800, .dark\\:bg-gray-800 {
+    background-color: #1f2937;
+  }
+
+  .dark-bg-gray-900, .dark\\:bg-gray-900 {
+    background-color: #111827;
+  }
+
+  .dark-text-white, .dark\\:text-white {
+    color: white;
+  }
+
+  .dark-text-gray-300, .dark\\:text-gray-300 {
+    color: #d1d5db;
+  }
+
+  .dark-text-gray-400, .dark\\:text-gray-400 {
+    color: #9ca3af;
+  }
+  
+  .dark\\:bg-gray-700 {
+    background-color: #374151;
+  }
+  
+  .dark\\:text-gray-700 {
+    color: #374151;
+  }
+  
+  .dark\\:bg-blue-900 {
+    background-color: #1e3a8a;
+  }
+  
+  .dark\\:text-blue-200 {
+    color: #bfdbfe;
+  }
+}
