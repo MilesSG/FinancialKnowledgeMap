@@ -19,9 +19,6 @@
           <router-link to="/graph" class="text-apple-dark" style="font-size: 0.875rem; transition: color 0.2s;">
             知识图谱
           </router-link>
-          <router-link to="/search" class="text-apple-dark" style="font-size: 0.875rem; transition: color 0.2s;">
-            搜索
-          </router-link>
           <router-link to="/qa" class="text-apple-dark" style="font-size: 0.875rem; transition: color 0.2s;">
             问答
           </router-link>

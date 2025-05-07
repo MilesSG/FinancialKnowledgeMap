@@ -327,122 +327,700 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="flex flex-col items-center min-h-screen bg-white">
-    <div class="w-full max-w-2xl mt-8 px-4">
-      <div class="text-2xl font-bold text-center mb-1">金融知识问答</div>
-      
-      <div class="text-gray-500 text-center mb-4 text-sm flex justify-center items-center gap-2 flex-wrap">
-        <span>输入您的金融学问题，系统将为您智能解答</span>
-        <span 
-          v-if="isProxyConnected" 
-          class="text-green-500 inline-flex items-center gap-1"
-        >
-          <span class="inline-block w-2 h-2 rounded-full bg-green-500"></span>
-          已连接
+  <div class="qa-container">
+    <!-- 页面标题区 -->
+    <section class="hero-section">
+      <div class="hero-content">
+        <h1 class="hero-title">金融知识问答</h1>
+        <p class="hero-subtitle">使用人工智能解答您的金融疑问</p>
+      </div>
+    </section>
+
+    <!-- 主要内容区 -->
+    <section class="chat-section">
+      <!-- 状态指示器 -->
+      <div class="connection-status" :class="{ 'is-connected': isProxyConnected }">
+        <span v-if="isProxyConnected" class="status-indicator">
+          <span class="status-dot"></span>已连接
         </span>
-        <div v-else class="flex gap-2 items-center">
+        <div v-else class="connection-actions">
           <button
-            class="text-red-500 inline-flex items-center gap-1 border border-red-500 rounded px-2 py-0.5"
             @click="discoverProxyServer"
             :disabled="discoveryInProgress"
+            class="action-button reconnect-button"
           >
-            <span class="inline-block w-2 h-2 rounded-full bg-red-500"></span>
             {{ discoveryInProgress ? '连接中...' : '重试连接' }}
           </button>
           <button
-            class="text-blue-500 inline-flex items-center gap-1 border border-blue-500 rounded px-2 py-0.5"
             @click="showManualInput = !showManualInput"
+            class="action-button configure-button"
           >
             手动设置
           </button>
         </div>
       </div>
-      
-      <!-- 手动设置URL -->
-      <div v-if="showManualInput" class="mb-4 p-3 bg-gray-50 rounded-lg">
-        <div class="text-xs text-gray-500 mb-1">输入代理服务器地址(如 http://localhost:3001)</div>
-        <div class="flex items-center gap-2">
+
+      <!-- 手动设置URL浮层 -->
+      <div v-if="showManualInput" class="manual-input-panel">
+        <div class="panel-title">输入代理服务器地址</div>
+        <div class="panel-form">
           <input
             v-model="manualUrl"
             type="text"
-            placeholder="http://localhost:端口号"
-            class="border rounded px-2 py-1 flex-1 text-sm"
+            placeholder="http://localhost:3001"
+            class="url-input"
           />
-          <button
-            @click="setManualUrl"
-            class="px-3 py-1 bg-blue-500 text-white rounded text-sm"
-          >
-            连接
-          </button>
-          <button
-            @click="showManualInput = false"
-            class="px-3 py-1 border rounded text-sm"
-          >
-            取消
-          </button>
-        </div>
-      </div>
-      
-      <div
-        ref="chatContainer"
-        class="bg-white rounded-lg shadow p-4 h-[60vh] overflow-y-auto flex flex-col gap-4"
-      >
-        <div v-for="(msg, idx) in messages" :key="idx" class="flex" :class="msg.role === 'user' ? 'justify-end' : 'justify-start'">
-          <div
-            class="flex items-end gap-2"
-            :class="msg.role === 'user' ? 'flex-row-reverse' : ''"
-          >
-            <div
-              class="px-4 py-2 rounded-2xl max-w-xs md:max-w-md break-words"
-              :class="msg.role === 'user'
-                ? 'bg-blue-500 text-white rounded-br-none'
-                : 'bg-gray-100 text-gray-800 rounded-bl-none'"
-            >
-              <div class="text-sm whitespace-pre-wrap">{{ msg.content }}</div>
-              <div class="text-xs opacity-60 mt-1 text-right">{{ msg.time }}</div>
-            </div>
+          <div class="panel-actions">
+            <button @click="setManualUrl" class="action-button confirm-button">连接</button>
+            <button @click="showManualInput = false" class="action-button cancel-button">取消</button>
           </div>
         </div>
-        <div v-if="isLoading" class="flex items-center gap-2 text-gray-400 text-sm">
-          <span>正在思考...</span>
+      </div>
+
+      <!-- 聊天界面 -->
+      <div class="chat-interface">
+        <!-- 消息列表 -->
+        <div ref="chatContainer" class="message-list">
+          <div
+            v-for="(msg, idx) in messages"
+            :key="idx"
+            class="message-item"
+            :class="{ 'user-message': msg.role === 'user', 'ai-message': msg.role === 'assistant' }"
+          >
+            <div class="message-avatar" :class="msg.role">
+              <span>{{ msg.role === 'user' ? '您' : 'AI' }}</span>
+            </div>
+            <div class="message-bubble">
+              <div class="message-content">{{ msg.content }}</div>
+              <div class="message-time">{{ msg.time }}</div>
+            </div>
+          </div>
+          
+          <!-- 加载状态 -->
+          <div v-if="isLoading" class="loading-indicator">
+            <div class="loading-dots">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+            <span class="loading-text">正在思考...</span>
+          </div>
+        </div>
+
+        <!-- 输入区域 -->
+        <div class="input-area">
+          <button
+            @click="clearChat"
+            class="clear-button"
+            :disabled="isLoading"
+          >
+            清空对话
+          </button>
+          <div class="message-input-wrapper">
+            <input
+              v-model="input"
+              placeholder="请输入您的金融学问题..."
+              class="message-input"
+              @keyup.enter="sendMessage"
+              :disabled="isLoading || !isProxyConnected"
+            />
+            <button
+              @click="sendMessage"
+              class="send-button"
+              :disabled="isLoading || !isProxyConnected || !input.trim()"
+            >
+              发送
+            </button>
+          </div>
+        </div>
+
+        <!-- 底部信息 -->
+        <div class="info-footer">
+          <p>本问答系统基于AI大模型，答案仅供学习参考</p>
+          <p v-if="proxyUrl">当前连接: {{ proxyUrl }}</p>
         </div>
       </div>
-      
-      <div class="flex mt-4 gap-2">
-        <button 
-          @click="clearChat" 
-          class="px-2 py-1 text-sm border rounded text-gray-600 hover:bg-gray-100"
-          :disabled="isLoading"
-        >
-          清空对话
-        </button>
-        <input
-          v-model="input"
-          placeholder="请输入您的金融学问题"
-          class="flex-1 border px-4 py-2 rounded"
-          @keyup.enter="sendMessage"
-          :disabled="isLoading || !isProxyConnected"
-        />
-        <button
-          @click="sendMessage"
-          class="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-300"
-          :disabled="isLoading || !isProxyConnected || !input.trim()"
-        >
-          发送
-        </button>
-      </div>
-      
-      <div class="text-xs text-gray-400 mt-2 text-center">
-        本问答系统基于AI大模型，答案仅供学习参考
-      </div>
-      
-      <div v-if="proxyUrl" class="text-xs text-gray-400 mt-1 text-center">
-        当前连接: {{ proxyUrl }}
-      </div>
-    </div>
+    </section>
   </div>
 </template>
 
 <style scoped>
-/* 无需额外样式，使用原生HTML和Tailwind CSS */
+/* 全局样式 */
+.qa-container {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Icons", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #1d1d1f;
+  width: 100%;
+  min-height: calc(100vh - 12rem);
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* 英雄区域 */
+.hero-section {
+  background: linear-gradient(160deg, #f5f5f7 0%, #ffffff 100%);
+  padding: 3rem 0;
+  text-align: center;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.hero-content {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.hero-title {
+  font-size: 3rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  margin: 0 0 0.5rem;
+  color: #1d1d1f;
+  background: linear-gradient(90deg, #1d1d1f, #434344);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-subtitle {
+  font-size: 1.25rem;
+  font-weight: 400;
+  color: #86868b;
+  letter-spacing: -0.01em;
+  margin: 0;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* 聊天区域 */
+.chat-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 2rem;
+  position: relative;
+}
+
+.connection-status {
+  position: absolute;
+  top: -1.5rem;
+  right: 2rem;
+  background-color: rgba(245, 245, 247, 0.8);
+  backdrop-filter: blur(8px);
+  border-radius: 1.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #0071e3;
+  font-weight: 500;
+}
+
+.status-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background-color: #0071e3;
+  display: inline-block;
+}
+
+.connection-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.action-button {
+  border-radius: 1.5rem;
+  font-size: 0.75rem;
+  padding: 0.375rem 0.75rem;
+  background: transparent;
+  border: 1px solid;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.reconnect-button {
+  color: #fff;
+  background-color: #ff3b30;
+  border-color: #ff3b30;
+}
+
+.reconnect-button:hover:not(:disabled) {
+  background-color: #e73229;
+}
+
+.configure-button {
+  color: #86868b;
+  border-color: #86868b;
+}
+
+.configure-button:hover {
+  color: #1d1d1f;
+  border-color: #1d1d1f;
+}
+
+.action-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* 手动设置面板 */
+.manual-input-panel {
+  position: absolute;
+  top: 1.5rem;
+  right: 2rem;
+  background-color: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(20px);
+  border-radius: 1rem;
+  padding: 1rem;
+  width: 20rem;
+  z-index: 20;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-0.5rem); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.panel-title {
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+  color: #1d1d1f;
+}
+
+.panel-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.url-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid #d2d2d7;
+  background-color: rgba(255, 255, 255, 0.8);
+  font-size: 0.875rem;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.url-input:focus {
+  border-color: #0071e3;
+  box-shadow: 0 0 0 2px rgba(0, 113, 227, 0.15);
+}
+
+.panel-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.confirm-button {
+  background-color: #0071e3;
+  color: white;
+  border-color: #0071e3;
+}
+
+.confirm-button:hover {
+  background-color: #0077ed;
+}
+
+.cancel-button {
+  color: #86868b;
+  border-color: #d2d2d7;
+}
+
+.cancel-button:hover {
+  color: #1d1d1f;
+  border-color: #1d1d1f;
+}
+
+/* 聊天界面 */
+.chat-interface {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-top: 2rem;
+  gap: 1.5rem;
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+}
+
+.message-list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  border-radius: 1.5rem;
+  background-color: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  overflow-y: auto;
+  min-height: 55vh;
+  max-height: 55vh;
+}
+
+.message-item {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.75rem;
+  max-width: 80%;
+}
+
+.user-message {
+  margin-left: auto;
+  flex-direction: row-reverse;
+}
+
+.ai-message {
+  margin-right: auto;
+}
+
+.message-avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.message-avatar.user {
+  background-color: #f5f5f7;
+  color: #1d1d1f;
+}
+
+.message-avatar.assistant {
+  background: linear-gradient(135deg, #0071e3, #42a1ec);
+  color: white;
+}
+
+.message-bubble {
+  border-radius: 1.25rem;
+  padding: 1rem 1.25rem;
+  position: relative;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  max-width: calc(100% - 3.25rem);
+}
+
+.user-message .message-bubble {
+  background: linear-gradient(135deg, #0071e3, #42a1ec);
+  color: white;
+  border-top-right-radius: 0;
+}
+
+.ai-message .message-bubble {
+  background-color: #f5f5f7;
+  color: #1d1d1f;
+  border-top-left-radius: 0;
+}
+
+.message-content {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  letter-spacing: -0.01em;
+}
+
+.message-time {
+  font-size: 0.75rem;
+  text-align: right;
+  margin-top: 0.5rem;
+}
+
+.user-message .message-time {
+  opacity: 0.8;
+}
+
+.ai-message .message-time {
+  color: #86868b;
+}
+
+/* 加载指示器 */
+.loading-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  align-self: flex-start;
+  padding: 0.75rem 1.25rem;
+  background-color: #f5f5f7;
+  border-radius: 2rem;
+  margin: 0.5rem 0;
+}
+
+.loading-dots {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.loading-dots span {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background-color: #0071e3;
+  display: inline-block;
+  animation: bounce 1.4s infinite ease-in-out both;
+}
+
+.loading-dots span:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.loading-dots span:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+@keyframes bounce {
+  0%, 80%, 100% { 
+    transform: scale(0);
+  } 
+  40% { 
+    transform: scale(1);
+  }
+}
+
+.loading-text {
+  font-size: 0.875rem;
+  color: #86868b;
+}
+
+/* 输入区域 */
+.input-area {
+  display: flex;
+  gap: 1rem;
+  margin: 0.5rem 0 1.5rem;
+  align-items: center;
+}
+
+.clear-button {
+  background-color: transparent;
+  color: #86868b;
+  border: 1px solid #d2d2d7;
+  border-radius: 2rem;
+  padding: 0.75rem 1.25rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.clear-button:hover:not(:disabled) {
+  background-color: rgba(0, 0, 0, 0.03);
+  color: #1d1d1f;
+}
+
+.clear-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.message-input-wrapper {
+  flex: 1;
+  position: relative;
+}
+
+.message-input {
+  width: 100%;
+  padding: 0.875rem 6rem 0.875rem 1.5rem;
+  border-radius: 2rem;
+  border: 1px solid #d2d2d7;
+  background-color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9375rem;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.message-input:focus {
+  border-color: #0071e3;
+  box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.15);
+}
+
+.message-input:disabled {
+  background-color: rgba(0, 0, 0, 0.03);
+  cursor: not-allowed;
+}
+
+.send-button {
+  position: absolute;
+  right: 0.3125rem;
+  top: 0.3125rem;
+  background: linear-gradient(135deg, #0071e3, #42a1ec);
+  color: white;
+  border: none;
+  border-radius: 1.75rem;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.send-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 113, 227, 0.2);
+}
+
+.send-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.send-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 底部信息 */
+.info-footer {
+  text-align: center;
+  color: #86868b;
+  font-size: 0.75rem;
+  padding: 0 1rem;
+  line-height: 1.5;
+}
+
+/* 响应式布局 */
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2.5rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 1rem;
+  }
+  
+  .chat-section {
+    padding: 0 1rem;
+  }
+  
+  .message-item {
+    max-width: 90%;
+  }
+  
+  .connection-status {
+    right: 1rem;
+  }
+  
+  .manual-input-panel {
+    width: calc(100% - 2rem);
+    right: 1rem;
+  }
+  
+  .input-area {
+    flex-direction: column;
+  }
+  
+  .clear-button {
+    width: 100%;
+  }
+}
+
+/* 暗色模式 */
+@media (prefers-color-scheme: dark) {
+  .qa-container {
+    background-color: #000;
+    color: #f5f5f7;
+  }
+  
+  .hero-section {
+    background: linear-gradient(160deg, #1d1d1f 0%, #000 100%);
+  }
+  
+  .hero-title {
+    background: linear-gradient(90deg, #f5f5f7, #a1a1a6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  
+  .message-list {
+    background-color: rgba(0, 0, 0, 0.5);
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+  
+  .ai-message .message-bubble {
+    background-color: #1d1d1f;
+    color: #f5f5f7;
+  }
+  
+  .message-avatar.user {
+    background-color: #1d1d1f;
+    color: #f5f5f7;
+  }
+  
+  .connection-status,
+  .manual-input-panel,
+  .loading-indicator {
+    background-color: rgba(29, 29, 31, 0.8);
+    color: #f5f5f7;
+  }
+  
+  .url-input,
+  .message-input {
+    background-color: rgba(0, 0, 0, 0.5);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #f5f5f7;
+  }
+  
+  .url-input::placeholder,
+  .message-input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+  }
+  
+  .clear-button {
+    color: #a1a1a6;
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+  
+  .clear-button:hover:not(:disabled) {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: #f5f5f7;
+  }
+  
+  .panel-title {
+    color: #f5f5f7;
+  }
+  
+  .cancel-button {
+    color: #a1a1a6;
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+  
+  .cancel-button:hover {
+    color: #f5f5f7;
+  }
+  
+  .info-footer {
+    color: #a1a1a6;
+  }
+}
 </style> 
