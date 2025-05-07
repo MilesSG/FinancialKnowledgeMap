@@ -35,12 +35,8 @@
 
 ### 安装步骤
 
-1. 克隆项目仓库
-```bash
-git clone https://github.com/yourusername/financial-knowledge-map.git
-```
+1. 安装依赖
 
-2. 安装依赖
 ```bash
 # 安装根目录依赖（用于代理服务）
 cd FinancialKnowledgeMap
@@ -52,8 +48,9 @@ cd financial-knowledge-map
 npm install
 ```
 
-3. 配置API密钥（可选，已内置默认密钥）
-编辑项目根目录的`proxy.js`文件，星火API密钥部分默认已配置：
+2. 配置API密钥（可选，已内置默认密钥）
+   编辑项目根目录的`proxy.js`文件，星火API密钥部分默认已配置：
+
 ```js
 const headers = {
   'Authorization': 'Bearer wJuciuDpqjMYRDSvaUzi:lYUMNBCrLeajKFBMeaNZ',
@@ -72,9 +69,6 @@ const headers = {
    - 运行以下命令启动代理服务：
    
    ```bash
-   # 在命令行/bash终端中
-   node proxy.js
-   
    # 在Windows PowerShell中
    node ./proxy.js
    ```
@@ -95,16 +89,13 @@ const headers = {
    
    - 服务会自动选择可用端口，如果3001被占用，将使用3002或更高端口
    - **重要**：保持此终端窗口打开，关闭会导致代理服务停止
-
+   
 2. **第二步：启动前端应用**
    - 打开另一个新的终端窗口
    - 进入金融知识图谱目录
    - 运行以下命令启动前端服务：
    
    ```bash
-   # 在命令行/bash终端中
-   cd financial-knowledge-map && npm run dev
-   
    # 在Windows PowerShell中 (注意：PowerShell不支持&&操作符)
    cd financial-knowledge-map ; npm run dev
    ```
@@ -118,7 +109,7 @@ const headers = {
      ➜  Network: use --host to expose 
      ➜  press h + enter to show help  
    ```
-
+   
 3. **第三步：访问系统**
    - 打开浏览器
    - 访问：http://localhost:3002
