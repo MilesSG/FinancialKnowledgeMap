@@ -1,0 +1,24 @@
+{
+  "dependencies": {
+    "axios": "^1.9.0",
+    "express": "^5.1.0"
+  },
+  "name": "financialknowledgemap",
+  "version": "1.0.0",
+  "description": "一个交互式金融学知识图谱可视化系统，基于Vue 3、TypeScript和ECharts构建。",
+  "main": "proxy.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MilesSG/FinancialKnowledgeMap.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MilesSG/FinancialKnowledgeMap/issues"
+  },
+  "homepage": "https://github.com/MilesSG/FinancialKnowledgeMap#readme"
+}
